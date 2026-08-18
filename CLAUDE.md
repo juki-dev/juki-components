@@ -19,6 +19,32 @@ Implications this places on future work in this repo:
 - **Shadow DOM encapsulation** should be used deliberately, keeping in mind that consuming apps will need to style/theme components from outside (e.g. via CSS custom properties/parts), since global stylesheets from the host app won't pierce the shadow boundary by default.
 - The recommended toolchain for implementing this, per current project direction, is **[Lit](https://lit.dev/)** — chosen for its small runtime, strong DX, and straightforward compilation down to standard custom elements. This is a direction, not yet an implemented decision — confirm with the user before scaffolding actual tooling.
 
+## Planned folder structure (atomic design)
+
+Components are intended to be organized under `src/components/` following **atomic design**, ordered by increasing composition:
+
+```
+src/
+└── components/
+    ├── atoms/          # Smallest indivisible UI elements — button, input, icon, label, badge
+    │   └── <atom-name>/
+    │       ├── <atom-name>.ts       # Custom element implementation (e.g. Lit)
+    │       ├── <atom-name>.styles.ts
+    │       └── <atom-name>.test.ts
+    ├── molecules/       # Simple combinations of atoms — form-field (label + input), search-bar
+    │   └── <molecule-name>/...
+    ├── organisms/       # Complex, self-contained sections composed of molecules/atoms — nav-bar, card-list, data-table
+    │   └── <organism-name>/...
+    └── templates/       # Layout-level composition of organisms, defining structure without real content
+        └── <template-name>/...
+```
+
+Notes on applying atomic design here:
+- **No "pages" tier.** Pages are a concept of the consuming application (the Vue/React app assembling these components), not of this library — this repo stops at `templates`.
+- Each component folder is self-contained (implementation, styles, tests, and any local docs/examples) so components can be authored, tested, and packaged independently.
+- Classification of a given component (atom vs. molecule vs. organism) should be judged by composition, not visual size: does it wrap other library components (molecule/organism), or is it a leaf element with no sub-components (atom)?
+- This structure is **planned, not yet created** — it should be scaffolded when actual component implementation work begins, and this section updated to match reality once real folders exist.
+
 ## Working in this repo right now
 
 Since there is no code yet, treat any task here as either:
