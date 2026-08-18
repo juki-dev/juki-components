@@ -19,6 +19,19 @@ Implications this places on future work in this repo:
 - **Shadow DOM encapsulation** should be used deliberately, keeping in mind that consuming apps will need to style/theme components from outside (e.g. via CSS custom properties/parts), since global stylesheets from the host app won't pierce the shadow boundary by default.
 - The recommended toolchain for implementing this, per current project direction, is **[Lit](https://lit.dev/)** — chosen for its small runtime, strong DX, and straightforward compilation down to standard custom elements. This is a direction, not yet an implemented decision — confirm with the user before scaffolding actual tooling.
 
+## Key project decisions
+
+These decisions have been made ahead of implementation, to guide scaffolding once it begins:
+
+1. **Packaging**: a single `juki-components` npm package (not per-component packages). One version, one changelog, one release pipeline. Tree-shaking is achieved via per-component module entry points within the package, not via separate packages.
+2. **Framework interop baseline**: targets **React 19+** (native custom-element prop/event support — no wrapper package needed) and **Vue 3** (consumers set `compilerOptions.isCustomElement` to match the library's tag-name prefix, e.g. `juki-*`). No framework-specific wrapper code ships from this repo at this stage.
+3. **Form participation**: form-associated custom elements (atoms that act as inputs) must use the `ElementInternals`/`formAssociated` API so native `<form>` submission and validation see their values — native forms do not automatically pick up custom element values otherwise.
+4. **SSR / Declarative Shadow DOM**: components should support Declarative Shadow DOM so they render meaningfully before hydration in SSR consumers (e.g. Next.js, Nuxt).
+5. **Build tool**: **Vite** (library mode) for building/bundling the package.
+6. **Testing & docs tooling**: **Vitest** for unit/component tests, **Storybook** for a browsable, framework-agnostic component catalog/docs.
+7. **Versioning & publishing**: **semantic-release**, driven by conventional commits, to automate version bumps, changelog generation, and npm publishing.
+8. **Accessibility baseline**: ARIA roles and keyboard navigation patterns are built into atoms from the start (not retrofitted later), since accessibility is part of each component's public contract.
+
 ## Styling constraints
 
 Components ship with a **default design token set** (colors, spacing) baked in, but every token must be **overridable by the consuming app via CSS custom properties**:
